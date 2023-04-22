@@ -14,7 +14,8 @@ jobs:
     # Note that we use the "hashFiles" option to only cache if the contents of the package.json and yarn.lock or
     # package-lock.json files have changed
     env:
-      CACHE_NAME: cache-node-modules-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
+      #CACHE_NAME: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
+      CACHE_NAME: cache-node-modules-${{ hashFiles('**/yarn.lock') }}
     steps:
       - name: Cache node modules
         uses: actions/cache@v2
