@@ -1,48 +1,20 @@
-name: Build and Test
+name: Demo de testes
 
-# Trigger the workflow on push to the main branch
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types: [closed]
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    
-    # Cache the npm or yarn packages to speed up builds
-    # Note that we use the "hashFiles" option to only cache if the contents of the package.json and yarn.lock or
-    # package-lock.json files have changed
-    env:
-      #CACHE_NAME: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
-      CACHE_NAME: cache-node-modules-${{ hashFiles('**/yarn.lock') }}
+  check-build-sei-la:
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
+    if: github.event.pull_request.merged || github.event.pull_request.closed_at
+
     steps:
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm ~/.cache/yarn
-          key: ${{ runner.os }}-${{ env.CACHE_NAME }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.CACHE_NAME }}
-            ${{ runner.os }}-
-    
-      # Install dependencies using either npm or yarn
-      - name: Install Dependencies
+      - name: Check pull request status
         run: |
-          if [[ -f yarn.lock ]]; then
-            yarn install
-          else
-            npm ci
+          if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+            echo "MERGEADO!"
+          elif [[ "${{ github.event.pull_request.state }}" == "closed" && "${{ github.event.pull_request.merged }}" == "false" ]]; then
+            echo "FECHADO!"
           fi
-    
-      # Build the project
-      - name: Build Project
-        run: |
-          # Replace this with your own build command
-          npm run build
-    
-      # Run tests
-      - name: Run Tests
-        run: |
-          # Replace this with your own test command
-          npm run test
